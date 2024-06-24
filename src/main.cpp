@@ -10,15 +10,27 @@
 #endif
 
 #ifndef BUTTON_SLEEP
-#define BUTTON_SLEEP GPIO_NUM_27
+#define BUTTON_SLEEP GPIO_NUM_14
 #endif
 
 #ifndef DI_ENCODER_A
-#define DI_ENCODER_A 32
+#define DI_ENCODER_A 35  // volume up
 #endif
 
 #ifndef DI_ENCODER_B
-#define DI_ENCODER_B 33
+#define DI_ENCODER_B 32  // volume down
+#endif
+
+#ifndef I2S_BCK
+#define I2S_BCK 25
+#endif
+
+#ifndef I2S_WS
+#define I2S_WS 26
+#endif
+
+#ifndef I2S_DATA_OUT
+#define I2S_DATA_OUT 33
 #endif
 
 RotaryEncoder rotaryEncoder(DI_ENCODER_A, DI_ENCODER_B);
@@ -64,7 +76,7 @@ void IRAM_ATTR button_isr() {
 }
 
 void knobCallback(long value) {
-	Serial.printf("Value: %ld\n", value);
+  Serial.printf("Value: %ld\n", value);
   int newVol = a2dp_sink.get_volume() + value * 5;
   Serial.printf("newVol: %d\n", newVol);
   if (newVol < 0) {
@@ -110,12 +122,12 @@ void setup() {
   */
 
   // Default I2S pins can be changed
-  // Note: PCM5102 I2S won't work without following codes!!!
+  // Note: PCM5102 I2S won't work without setting RxTxMode!!!
   auto cfg = out.defaultConfig(TX_MODE);
   // Note: pin 14 and 15 are not working for MAX98357A
-  cfg.pin_bck = 26; //14;
-  cfg.pin_ws = 25;  //15;
-  cfg.pin_data = 22;
+  cfg.pin_bck = I2S_BCK;
+  cfg.pin_ws = I2S_WS;
+  cfg.pin_data = I2S_DATA_OUT;
   cfg.i2s_format = I2S_STD_FORMAT;
   // i2s.begin(cfg);
   cfg.copyFrom(info);
@@ -128,7 +140,7 @@ void setup() {
   a2dp_sink.set_on_data_received(on_data);
   a2dp_sink.start("JBL Pebbles");
   
-  rotaryEncoder.setEncoderType(EncoderType::HAS_PULLUP);
+  rotaryEncoder.setEncoderType(EncoderType::FLOATING);
   rotaryEncoder.setBoundaries(-1, 1, false);
   rotaryEncoder.onTurned(&knobCallback);
   rotaryEncoder.begin();
