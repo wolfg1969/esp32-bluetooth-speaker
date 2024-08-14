@@ -138,7 +138,7 @@ void setup() {
 
   // a2dp_sink.set_auto_reconnect(true);
   a2dp_sink.set_on_data_received(on_data);
-  a2dp_sink.start("JBL Pebbles");
+  a2dp_sink.start("JBL Pebbles Bluetooth");
   
   rotaryEncoder.setEncoderType(EncoderType::FLOATING);
   rotaryEncoder.setBoundaries(-1, 1, false);
